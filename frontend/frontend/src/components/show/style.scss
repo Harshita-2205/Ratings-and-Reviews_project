@@ -1,0 +1,82 @@
+@import "../../mixins.scss";
+
+.show {
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .imageContainer {
+    border-radius: 12px;
+    position: relative;
+    height: 300px;
+    width: 200px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+
+    .edit {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 32px;
+      width: 32px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #f8f8f8;
+      }
+
+      svg {
+        color: crimson;
+        font-size: 18px;
+      }
+    }
+
+    .image {
+      object-fit: cover;
+      border-radius: 12px;
+      height: 100%;
+      width: 100%;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  div {
+    padding: 8px 10px;
+
+    .name {
+      color: var(--textColor);
+      font-weight: 600;
+      font-size: 17px;
+      width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    p {
+      color: var(--softTextColor);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+  }
+}
