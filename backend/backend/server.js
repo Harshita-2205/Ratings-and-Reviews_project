@@ -17,20 +17,14 @@ app.use(express.json());
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
-const showRoutes = require("./routes/showRoutes");
-const theatreRoutes = require("./routes/theatreRoutes");
 const movieRoutes = require("./routes/movieRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
-const bookingRoutes = require("./routes/bookingRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 
 app.use("/api/auth", authRoutes);
-app.use("/api/shows", showRoutes);
-app.use("/api/theatre", theatreRoutes);
 app.use("/api/movie", movieRoutes);
 app.use("/api/favorite", favoriteRoutes);
-app.use("/api/bookings", bookingRoutes);
 app.use("/api/auth/admin", adminRoutes);
 app.use("/api/review", reviewRoutes);
 

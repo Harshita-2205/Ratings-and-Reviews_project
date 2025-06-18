@@ -162,16 +162,7 @@ const MovieDetails = () => {
 
           <Reviews movieId={movieId} />
 
-          <div className="bookButtonContainer">
-            <button type="button">
-              <Link
-                style={{ textDecoration: "none", color: "inherit" }}
-                to={`/movieshows/${movieDetails?.movieId}`}
-              >
-                Book Tickets
-              </Link>
-            </button>
-          </div>
+         
         </div>
       ) : (
         <div className="loadingContainer">

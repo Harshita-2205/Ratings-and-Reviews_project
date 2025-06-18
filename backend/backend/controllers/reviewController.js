@@ -3,12 +3,18 @@ const Review = require("../models/reviewModel");
 // Add review
 module.exports.addReview = async (req, res) => {
   try {
-    const { movieId, review, reviewId, datetime } = req.body;
+    const { movieId, review, reviewId, datetime, rating } = req.body;
     const user = req.user.userDetails;
+
+    // Validate rating
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ status: false, msg: "Rating must be between 1 and 5" });
+    }
 
     await Review.create({
       reviewId,
       review,
+      rating, // ✅ Include rating
       username: user.name,
       email: user.email,
       movieId,
@@ -25,11 +31,16 @@ module.exports.addReview = async (req, res) => {
 // Edit review by reviewId
 module.exports.editReview = async (req, res) => {
   try {
-    const { reviewId, review } = req.body;
+    const { reviewId, review, rating } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ status: false, msg: "Rating must be between 1 and 5" });
+    }
 
     await Review.update(
       {
         review,
+        rating, // ✅ Update rating
         datetime: new Date(),
       },
       {
@@ -67,7 +78,7 @@ module.exports.getReviews = async (req, res) => {
 
     const reviews = await Review.findAll({
       where: { movieId },
-      order: [["datetime", "DESC"]], // Optional: latest first
+      order: [["datetime", "DESC"]],
     });
 
     return res.status(200).json({ status: true, reviews });

@@ -30,6 +30,27 @@
         border-radius: 8px;
         color: white;
       }
+       align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+      
+  .ratingStars {
+    display: flex;
+    gap: 5px;
+    font-size: 20px;
+    color: gold;
+    cursor: pointer;
+    align-items: center;
+    margin-left: 10px;
+
+    span {
+      transition: color 0.2s ease;
+      &:hover {
+        color: orange;
+      }
+    }
+  }
+
     }
 
     .noReviews {

@@ -1,7 +1,6 @@
 const { Sequelize, Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-
 // Import Sequelize models
 //const { Admin, User, Movie, Theatre, Show, Favorite, Booking, Review } = require('./models'); // adjust the path as needed
 const Admin = require("./models/adminModel");
@@ -67,7 +66,7 @@ async function seedDB() {
         releaseDate: "2010-07-16",
         certification: "PG-13",
         runtime: 148,
-        media: "https://somecdn.com/inception.jpg",
+        media: "https://m.media-amazon.com/images/S/pv-target-images/e826ebbcc692b4d19059d24125cf23699067ab621c979612fd0ca11ab42a65cb._SX1080_FMjpg_.jpg",
         description: "A thief who steals corporate secrets...",
         adminEmail: admin.email,
         updatedBy: admin.email,
@@ -81,7 +80,7 @@ async function seedDB() {
         releaseDate: "2014-11-07",
         certification: "PG-13",
         runtime: 169,
-        media: "https://somecdn.com/interstellar.jpg",
+        media: "https://i.ibb.co/bMPBBXmc/download.jpg",
         description: "A team of explorers travel through a wormhole...",
         adminEmail: admin.email,
         updatedBy: admin.email,
@@ -95,7 +94,7 @@ async function seedDB() {
         releaseDate: "2008-07-18",
         certification: "PG-13",
         runtime: 152,
-        media: "https://somecdn.com/dark-knight.jpg",
+        media: "https://i.ibb.co/ynMnbZWs/darkknight-Poster.jpg",
         description: "When the menace known as the Joker emerges...",
         adminEmail: admin.email,
         updatedBy: admin.email,
@@ -205,16 +204,20 @@ async function seedDB() {
 //    }
 //
     // Seed Reviews
-    await Review.bulkCreate(
-      movies.slice(0, 2).map((movie) => ({
-        reviewId: uuidv4(),
-        movieId: movie.movieId,
-        review: "Amazing movie! A must-watch.",
-        username: "user1",
-        email: "user1@example.com",
-        datetime: new Date(),
-      }))
-    );
+     await Review.bulkCreate(
+  movies.slice(0, 2).map((movie) => ({
+    reviewId: uuidv4(),
+    movieId: movie.movieId,
+    review: "Amazing movie! A must-watch.",
+    username: "user1",
+    email: "user1@example.com",
+    datetime: new Date(),
+    rating: 5, // ✅ Add this line
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }))
+);
+
 
     console.log("🌟 Reviews seeded");
 

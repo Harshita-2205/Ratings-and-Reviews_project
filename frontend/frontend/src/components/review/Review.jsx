@@ -13,10 +13,11 @@ const Review = ({ r, mutate }) => {
   const [options, setOptions] = useState(false);
   const [edit, setEdit] = useState(false);
   const [editReview, setEditReview] = useState("");
+  const [rating] = useState(r.rating || 0); // current review rating
 
   useEffect(() => {
     setEditReview(r.review);
-  }, []);
+  }, [r.review]);
 
   const { username, review, reviewId, datetime, email } = r;
   const jwtToken = Cookies.get("jwtToken");
@@ -25,7 +26,6 @@ const Review = ({ r, mutate }) => {
   const handleReviewDelete = async () => {
     try {
       const host = `${render}/api/review/deletereview/${reviewId}`;
-
       const { data } = await axios.delete(host);
       if (data?.status) {
         mutate();
@@ -38,17 +38,35 @@ const Review = ({ r, mutate }) => {
   const handleReviewEdit = async () => {
     try {
       const host = `${render}/api/review/editreview`;
-
       const { data } = await axios.put(host, {
         reviewId,
         review: editReview,
       });
       if (data?.status) {
+        setEdit(false);
         mutate();
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const renderRatingStars = (rating) => {
+    return (
+      <div className="ratingStars" style={{ marginBottom: "4px" }}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            style={{
+              color: star <= rating ? "gold" : "lightgray",
+              fontSize: "16px",
+            }}
+          >
+            ★
+          </span>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -64,6 +82,9 @@ const Review = ({ r, mutate }) => {
           <p className="moment">{moment(datetime).fromNow()}</p>
         </div>
 
+        {/* ⭐ Display static rating */}
+        {renderRatingStars(rating)}
+
         {!edit && <p className="review">{review}</p>}
 
         {edit && (
@@ -72,9 +93,7 @@ const Review = ({ r, mutate }) => {
               type="text"
               value={editReview}
               className="reviewEdit"
-              onChange={(e) => {
-                setEditReview(e.target.value);
-              }}
+              onChange={(e) => setEditReview(e.target.value)}
             />
             <p
               onClick={handleReviewEdit}
@@ -105,7 +124,7 @@ const Review = ({ r, mutate }) => {
             </li>
             <li>
               <FaRegEdit
-                style={edit === true ? { color: "crimson" } : {}}
+                style={edit ? { color: "crimson" } : {}}
                 onClick={() => setEdit(!edit)}
               />
             </li>

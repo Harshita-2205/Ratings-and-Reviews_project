@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import useSWR from "swr";
 import Loader from "../../components/loader/Loader";
@@ -9,21 +9,24 @@ import ContentWrapper from "../contentWrapper/ContentWrapper";
 import { render } from "../../host";
 import "./style.scss";
 import Review from "../review/Review";
+import { jwtDecode } from "jwt-decode";
 
 const Reviews = ({ movieId }) => {
   const [review, setReview] = useState("");
+  const [rating, setRating] = useState(5); // New rating state
 
   const jwtToken = Cookies.get("jwtToken");
+  const payload = jwtToken ? jwtDecode(jwtToken) : null;
+  const email = payload?.userDetails?.email || "";
+  const username = payload?.userDetails?.username || "";
 
+  // SWR fetcher
   const fetcher = async (url) => {
     const res = await fetch(url);
     const data = await res.json();
-
     if (!res.ok) {
-      const error = new Error(data.message);
-      throw error;
+      throw new Error(data.message || "Error fetching reviews");
     }
-
     return data;
   };
 
@@ -33,75 +36,90 @@ const Reviews = ({ movieId }) => {
     isLoading,
   } = useSWR(`${render}/api/review/getreviews/${movieId}`, fetcher);
 
-  const handleReview = (e) => {
-    setReview(e.target.value);
-  };
+  const handleReviewChange = (e) => setReview(e.target.value);
 
   const handleReviewSubmit = async () => {
     try {
-      const host = `${render}/api/review/addreview`;
+      const endpoint = `${render}/api/review/addreview`;
 
-      const body = {
-        reviewId: v4(),
-        movieId: movieId,
+      const payload = {
+        reviewId: uuidv4(),
+        movieId,
         review,
         datetime: new Date(),
+        email,
+        username,
+        rating,
       };
-      await axios.post(host, body, {
+
+      await axios.post(endpoint, payload, {
         headers: {
           "auth-token": jwtToken,
         },
       });
 
-      mutate();
       setReview("");
+      setRating(5); // Reset rating
+      mutate(); // Refresh reviews
     } catch (error) {
-      console.log(error);
+      console.error("Error submitting review:", error);
     }
   };
 
-  const reviewInput = () => {
-    return (
-      <div className="reviewInputContainer">
-        <input
-          placeholder="Write a review..."
-          value={review}
-          onChange={handleReview}
-        />
-        <button
-          style={
-            review.length < 6 ? { opacity: 0.5, pointerEvents: "none" } : {}
-          }
-          onClick={handleReviewSubmit}
-        >
-          Send
-        </button>
+  const reviewInput = () => (
+    <div className="reviewInputContainer">
+      <input
+        type="text"
+        placeholder="Write a review..."
+        value={review}
+        onChange={handleReviewChange}
+        aria-label="Write your review"
+      />
+
+      <div className="ratingStars">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            onClick={() => setRating(star)}
+            style={{
+              fontSize: "20px",
+              cursor: "pointer",
+              color: star <= rating ? "gold" : "lightgray",
+            }}
+          >
+            ★
+          </span>
+        ))}
       </div>
-    );
-  };
 
-  const RenderReviews = () => {
-    return (
-      <ul className="ReviewsList">
-        {reviewsData?.reviews?.map((r) => {
-          return <Review mutate={mutate} key={v4()} r={r} />;
-        })}
-      </ul>
-    );
-  };
+      <button
+        onClick={handleReviewSubmit}
+        disabled={review.length < 6}
+        style={review.length < 6 ? { opacity: 0.5 } : {}}
+      >
+        Send
+      </button>
+    </div>
+  );
 
-  const reviews = () => {
+  const renderReviews = () => (
+    <ul className="ReviewsList">
+      {reviewsData?.reviews?.map((r) => (
+        <Review key={r.reviewId} r={r} mutate={mutate} />
+      ))}
+    </ul>
+  );
+
+  const reviewsSection = () => {
+    if (reviewsData?.reviews?.length > 0) {
+      return <div className="reviews">{renderReviews()}</div>;
+    }
+
     return (
-      <>
-        {reviewsData?.reviews?.length > 0 ? (
-          <div className="reviews">{<RenderReviews />}</div>
-        ) : (
-          <div className="noReviews">
-            <MdOutlineSpeakerNotesOff />
-            <h1>No Reviews</h1>
-          </div>
-        )}
-      </>
+      <div className="noReviews">
+        <MdOutlineSpeakerNotesOff />
+        <h1>No Reviews</h1>
+      </div>
     );
   };
 
@@ -115,8 +133,7 @@ const Reviews = ({ movieId }) => {
     <div className="reviewsContainer">
       <ContentWrapper>
         {reviewInput()}
-
-        {isLoading ? renderLoading() : reviews()}
+        {isLoading ? renderLoading() : reviewsSection()}
       </ContentWrapper>
     </div>
   );
