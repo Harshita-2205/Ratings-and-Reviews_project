@@ -89,6 +89,61 @@ password: user123
 
 Sample Movies: Inception, Interstellar, The Dark Knight
 
+## Database Schema: SQL Schema/ER diagram
+```mermaid
+erDiagram
+    USERS {
+        string userId PK
+        string name
+        string email
+        string password
+        boolean isAdmin
+        datetime createdAt
+    }
+
+    MOVIES {
+        string movieId PK
+        string title
+        string description
+        string genre
+        date releaseDate
+        float rating
+        string posterUrl
+        int duration
+        string director
+    }
+
+    WATCHLIST {
+        string watchlistId PK
+        string userId FK
+        string movieId FK
+        datetime addedAt
+    }
+
+    REVIEWS {
+        string reviewId PK
+        string userId FK
+        string movieId FK
+        string comment
+        int stars
+        datetime createdAt
+    }
+
+    GENRES {
+        string genreId PK
+        string name
+    }
+
+```
+### 📝 Description of Tables
+
+- **USERS** – Users of the platform (viewers or admins).
+- **MOVIES** – Main catalog of movies.
+- **REVIEWS** – User-submitted reviews for each movie.
+- **WATCHLIST** – Personal watchlist/favorites saved by each user.
+- **GENRES** – Genre categorization (optional separate table if normalized).
+
+  
 ## 🤝 Contributing
 1.Fork the repository
 
